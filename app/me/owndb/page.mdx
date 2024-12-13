@@ -1,0 +1,222 @@
+export const metadata = {
+  title: 'How To Create Your Own No-Sql Database',
+  description: "Learn how to create your own no-sql database with beginner friendly guide."
+};
+
+# Building a Simple Key-Value NoSQL Database in JavaScript
+
+In this guide, we’ll walk through the process of building a simple key-value NoSQL database from scratch using JavaScript. This project is beginner-friendly and emphasizes core concepts like data storage, retrieval, and the flexibility of key-value systems.
+
+---
+
+## Step 1: Understanding the Basics
+
+A **key-value database** stores data as a collection of key-value pairs. Each key is unique, and it maps to a specific value. This structure is simple and versatile, making it great for a variety of applications.
+
+For this project, we’ll:
+1. Use an in-memory object to store key-value pairs.
+2. Implement basic CRUD operations:
+   - **Create** (Add a new key-value pair).
+   - **Read** (Retrieve a value by its key).
+   - **Update** (Modify an existing key’s value).
+   - **Delete** (Remove a key-value pair).
+3. Optionally save the data to a file for persistence.
+
+---
+
+## Step 2: Setting Up the Project
+
+Create a new folder for your project and initialize a Node.js environment:
+
+```bash
+mkdir key-value-database
+cd key-value-database
+npm init -y
+```
+
+Install the `fs` (File System) module, which is built into Node.js, to handle file operations. No additional installations are needed.
+
+---
+
+## Step 3: Implementing the Key-Value Database
+
+### 3.1 Define the Basic Data Structure
+
+We’ll use a plain JavaScript object (`{}`) to store the key-value pairs in memory.
+
+```javascript
+class KeyValueDatabase {
+  constructor() {
+    this.data = {}; // In-memory storage
+  }
+}
+
+module.exports = KeyValueDatabase;
+```
+
+### 3.2 Add CRUD Operations
+
+#### Adding a Key-Value Pair
+
+```javascript
+add(key, value) {
+  if (this.data[key] !== undefined) {
+    throw new Error(`Key "${key}" already exists.`);
+  }
+  this.data[key] = value;
+  return `Key "${key}" added successfully.`;
+}
+```
+
+#### Retrieving a Value by Key
+
+```javascript
+get(key) {
+  if (this.data[key] === undefined) {
+    throw new Error(`Key "${key}" not found.`);
+  }
+  return this.data[key];
+}
+```
+
+#### Updating an Existing Key
+
+```javascript
+update(key, newValue) {
+  if (this.data[key] === undefined) {
+    throw new Error(`Key "${key}" not found.`);
+  }
+  this.data[key] = newValue;
+  return `Key "${key}" updated successfully.`;
+}
+```
+
+#### Deleting a Key-Value Pair
+
+```javascript
+delete(key) {
+  if (this.data[key] === undefined) {
+    throw new Error(`Key "${key}" not found.`);
+  }
+  delete this.data[key];
+  return `Key "${key}" deleted successfully.`;
+}
+```
+
+### Full Implementation
+
+Here’s the complete `KeyValueDatabase` class:
+
+```javascript
+const fs = require('fs');
+
+class KeyValueDatabase {
+  constructor() {
+    this.data = {}; // In-memory storage
+  }
+
+  add(key, value) {
+    if (this.data[key] !== undefined) {
+      throw new Error(`Key "${key}" already exists.`);
+    }
+    this.data[key] = value;
+    return `Key "${key}" added successfully.`;
+  }
+
+  get(key) {
+    if (this.data[key] === undefined) {
+      throw new Error(`Key "${key}" not found.`);
+    }
+    return this.data[key];
+  }
+
+  update(key, newValue) {
+    if (this.data[key] === undefined) {
+      throw new Error(`Key "${key}" not found.`);
+    }
+    this.data[key] = newValue;
+    return `Key "${key}" updated successfully.`;
+  }
+
+  delete(key) {
+    if (this.data[key] === undefined) {
+      throw new Error(`Key "${key}" not found.`);
+    }
+    delete this.data[key];
+    return `Key "${key}" deleted successfully.`;
+  }
+
+  saveToFile(filePath) {
+    fs.writeFileSync(filePath, JSON.stringify(this.data, null, 2));
+    return `Data saved to ${filePath}`;
+  }
+
+  loadFromFile(filePath) {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File "${filePath}" not found.`);
+    }
+    const fileData = fs.readFileSync(filePath);
+    this.data = JSON.parse(fileData);
+    return `Data loaded from ${filePath}`;
+  }
+}
+
+module.exports = KeyValueDatabase;
+```
+
+---
+
+## Step 4: Testing the Database
+
+Create a `test.js` file to interact with your database.
+
+```javascript
+const KeyValueDatabase = require('./KeyValueDatabase');
+const db = new KeyValueDatabase();
+
+// Adding key-value pairs
+db.add('name', 'John Doe');
+db.add('age', 30);
+console.log(db.get('name')); // Output: John Doe
+
+// Updating a value
+db.update('age', 31);
+console.log(db.get('age')); // Output: 31
+
+// Deleting a key-value pair
+db.delete('name');
+
+// Saving to a file
+db.saveToFile('database.json');
+
+// Loading from a file
+const newDb = new KeyValueDatabase();
+newDb.loadFromFile('database.json');
+console.log(newDb.get('age')); // Output: 31
+```
+
+Run the test script:
+
+```bash
+node test.js
+```
+
+---
+
+## Step 5: Practical Use Cases
+
+1. **Configuration Management**: Store application settings (e.g., theme, language preferences).
+2. **Session Storage**: Keep temporary data during the execution of an application.
+3. **Mock Databases**: Use the database as a lightweight mock for testing larger applications.
+
+---
+
+## Conclusion
+
+Congratulations! You’ve built a simple key-value NoSQL database from scratch. This project introduces key programming concepts, including in-memory data storage, file persistence, and error handling. From here, you can expand the project by adding features like:
+
+- Supporting nested data structures.
+- Implementing data validation.
+- Optimizing file persistence for larger datasets.
+
+Happy coding!
